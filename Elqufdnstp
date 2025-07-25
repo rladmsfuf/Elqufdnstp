@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 띠별 운세</title>
+    <style>
+        /* --- 1. 기본 스타일 및 폰트 설정 --- */
+        /* 웹페이지에서 사용할 깔끔한 글꼴을 불러옵니다. */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f5f5f7; /* 애플 기기 배경과 비슷한 연한 회색 */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* --- 2. 메인 컨테이너 스타일 (흰색 카드 형태) --- */
+        .container {
+            background-color: #ffffff;
+            border-radius: 20px; /* 모서리를 둥글게 */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* 부드러운 그림자 효과 */
+            padding: 30px 40px;
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1d1d1f; /* 애플의 기본 텍스트 색상 */
+            margin-bottom: 30px;
+        }
+
+        /* --- 3. 띠 아이콘 그리드 스타일 --- */
+        .zodiac-grid {
+            display: grid;
+            /* 화면 크기에 따라 아이콘 개수를 자동으로 조절 (최소 100px) */
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 20px; /* 아이콘 사이의 간격 */
+        }
+
+        /* --- 4. 개별 띠 아이콘 스타일 --- */
+        .zodiac-icon {
+            cursor: pointer; /* 마우스를 올리면 손가락 모양으로 변경 */
+            padding: 15px;
+            border-radius: 15px;
+            background-color: #f5f5f7;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* 부드러운 애니메이션 효과 */
+            text-align: center;
+        }
+
+        /* 마우스를 올렸을 때 아이콘이 살짝 위로 올라가는 효과 */
+        .zodiac-icon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .zodiac-icon img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .zodiac-icon p {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* --- 5. 운세 팝업 (모달) 스타일 --- */
+        .modal {
+            display: none; /* 평소에는 숨겨둡니다. */
+            position: fixed; /* 화면에 고정 */
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* 반투명한 검은색 배경 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 0.3s ease; /* 나타날 때 부드럽게 보이는 효과 */
+        }
+        
+        /* 팝업창이 나타나는 애니메이션 효과 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        #modal-title img {
+            width: 40px;
+            height: 40px;
+        }
+
+        #modal-text {
+            font-size: 16px;
+            line-height: 1.6; /* 줄 간격을 넓혀 가독성을 높임 */
+            color: #555;
+            text-align: left; /* 운세 내용은 왼쪽 정렬 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 전체 콘텐츠를 감싸는 영역 -->
+    <div class="container">
+        <h1>오늘의 띠별 운세</h1>
+
+        <!-- 12간지 아이콘이 표시될 격자 영역 -->
+        <div class="zodiac-grid">
+            <!-- 각 띠 아이콘, data-zodiac 속성으로 어떤 띠인지 구분합니다. -->
+            <div class="zodiac-icon" data-zodiac="rat">
+                <img src="https://em-content.zobj.net/source/apple/391/rat_1f400.png" alt="쥐">
+                <p>쥐띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="ox">
+                <img src="https://em-content.zobj.net/source/apple/391/ox_1f402.png" alt="소">
+                <p>소띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="tiger">
+                <img src="https://em-content.zobj.net/source/apple/391/tiger_1f405.png" alt="호랑이">
+                <p>호랑이띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="rabbit">
+                <img src="https://em-content.zobj.net/source/apple/391/rabbit_1f407.png" alt="토끼">
+                <p>토끼띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="dragon">
+                <img src="https://em-content.zobj.net/source/apple/391/dragon_1f409.png" alt="용">
+                <p>용띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="snake">
+                <img src="https://em-content.zobj.net/source/apple/391/snake_1f40d.png" alt="뱀">
+                <p>뱀띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="horse">
+                <img src="https://em-content.zobj.net/source/apple/391/horse_1f40e.png" alt="말">
+                <p>말띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="sheep">
+                <img src="https://em-content.zobj.net/source/apple/391/ewe_1f411.png" alt="양">
+                <p>양띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="monkey">
+                <img src="https://em-content.zobj.net/source/apple/391/monkey_1f412.png" alt="원숭이">
+                <p>원숭이띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="rooster">
+                <img src="https://em-content.zobj.net/source/apple/391/rooster_1f413.png" alt="닭">
+                <p>닭띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="dog">
+                <img src="https://em-content.zobj.net/source/apple/391/dog_1f415.png" alt="개">
+                <p>개띠</p>
+            </div>
+            <div class="zodiac-icon" data-zodiac="pig">
+                <img src="https://em-content.zobj.net/source/apple/391/pig_1f416.png" alt="돼지">
+                <p>돼지띠</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 운세 내용을 보여줄 팝업(모달) 창 -->
+    <div id="horoscope-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modal-title">
+                <img id="modal-img" src="" alt="">
+                <span id="modal-zodiac-name"></span>
+            </h2>
+            <p id="modal-text"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 운세 데이터 저장 공간 ---
+        // 각 띠별 운세 내용을 이곳에 저장합니다. 이 내용만 수정하면 운세가 바뀝니다.
+        const horoscopes = {
+            rat: { name: "쥐띠", content: "예상치 못한 행운이 찾아올 수 있습니다. 주변 사람들과의 관계에 신경 쓰면 더 좋은 결과가 있을 것입니다. 금전운이 좋으니 작은 투자를 고려해봐도 좋습니다." },
+            ox: { name: "소띠", content: "꾸준함이 빛을 발하는 날입니다. 성실하게 노력해온 일에서 좋은 성과를 얻을 수 있습니다. 건강에 유의하고 충분한 휴식을 취하는 것이 중요합니다." },
+            tiger: { name: "호랑이띠", content: "새로운 도전이 필요한 시기입니다. 망설이지 말고 과감하게 행동하면 좋은 기회를 잡을 수 있습니다. 리더십을 발휘하여 주변을 이끌어보세요." },
+            rabbit: { name: "토끼띠", content: "섬세함과 배려심이 필요한 날입니다. 주변 사람들의 마음을 얻으면 어려운 일도 쉽게 해결될 것입니다. 예술적인 활동에 좋은 영감을 얻을 수 있습니다." },
+            dragon: { name: "용띠", content: "자신감이 넘치고 활력이 솟아나는 하루입니다. 목표를 향해 힘차게 나아가세요. 다만, 너무 서두르지 말고 신중함을 유지하는 것이 좋습니다." },
+            snake: { name: "뱀띠", content: "지혜롭게 상황을 판단해야 합니다. 겉모습에 속지 말고 본질을 파악하는 능력이 필요한 날입니다. 혼자만의 시간을 가지며 계획을 세워보세요." },
+            horse: { name: "말띠", content: "활동적인 에너지가 가득한 날입니다. 새로운 장소를 방문하거나 새로운 사람들을 만나면 좋은 일이 생길 것입니다. 긍정적인 마음을 유지하세요." },
+            sheep: { name: "양띠", content: "안정과 평화가 함께하는 하루입니다. 가족이나 친구들과 함께 시간을 보내며 재충전의 기회를 가지세요. 무리한 계획보다는 현실적인 목표를 세우는 것이 좋습니다." },
+            monkey: { name: "원숭이띠", content: "재치와 순발력이 돋보이는 날입니다. 어려운 문제도 쉽게 해결할 수 있는 아이디어가 떠오를 것입니다. 유머 감각으로 주변 분위기를 밝게 만들어보세요." },
+            rooster: { name: "닭띠", content: "꼼꼼함과 정확성이 요구되는 날입니다. 계획한 일을 차분히 진행하면 좋은 결과를 얻을 수 있습니다. 약속 시간을 잘 지키는 것이 중요합니다." },
+            dog: { name: "개띠", content: "신뢰와 책임감이 빛을 발하는 하루입니다. 주변 사람들이 당신을 믿고 따를 것입니다. 어려운 사람을 돕는다면 더 큰 복이 되어 돌아올 것입니다." },
+            pig: { name: "돼지띠", content: "마음이 풍요롭고 여유로운 날입니다. 긍정적인 생각이 좋은 운을 불러옵니다. 맛있는 음식을 먹거나 즐거운 활동을 하며 하루를 보내세요." }
+        };
+
+        // --- 2. 필요한 HTML 요소들을 가져와 변수에 저장 ---
+        // 자바스크립트가 제어할 HTML 부분들을 미리 찾아둡니다.
+        const modal = document.getElementById('horoscope-modal');
+        const modalZodiacName = document.getElementById('modal-zodiac-name');
+        const modalImg = document.getElementById('modal-img');
+        const modalText = document.getElementById('modal-text');
+        const closeButton = document.querySelector('.close-button');
+        const zodiacIcons = document.querySelectorAll('.zodiac-icon');
+
+        // --- 3. 모든 띠 아이콘에 '클릭 이벤트' 설정 ---
+        zodiacIcons.forEach(icon => {
+            // 각각의 아이콘이 클릭되었을 때 실행할 함수를 지정합니다.
+            icon.addEventListener('click', () => {
+                // 클릭된 아이콘의 'data-zodiac' 값을 가져옵니다. (예: 'rat', 'ox')
+                const zodiac = icon.getAttribute('data-zodiac');
+                // 해당 띠에 맞는 운세 데이터를 위에서 만든 horoscopes 객체에서 찾습니다.
+                const horoscopeData = horoscopes[zodiac];
+
+                // 팝업 창의 내용을 찾아온 운세 데이터로 채웁니다.
+                modalZodiacName.textContent = horoscopeData.name + " 운세";
+                modalText.textContent = horoscopeData.content;
+                modalImg.src = icon.querySelector('img').src; // 클릭한 아이콘의 이미지를 팝업창에도 표시
+                
+                // 숨겨져 있던 팝업 창을 화면에 보여줍니다.
+                modal.style.display = 'flex';
+            });
+        });
+
+        // --- 4. 팝업 창 닫기 기능 설정 ---
+        // 닫기(X) 버튼을 클릭했을 때
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none'; // 팝업 창을 다시 숨깁니다.
+        });
+
+        // 팝업 창 바깥의 어두운 영역을 클릭했을 때
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) { // 만약 클릭된 부분이 팝업 창 자신이라면
+                modal.style.display = 'none'; // 팝업 창을 닫습니다.
+            }
+        });
+    </script>
+
+</body>
+</html>
